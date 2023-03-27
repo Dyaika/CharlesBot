@@ -1,8 +1,10 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version "7.0.0"
 }
 
-group 'me.dyaikaproductions'
+group 'me.dyaika'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -13,6 +15,25 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     implementation("net.dv8tion:JDA:5.0.0-beta.5")
+}
+
+application {
+    mainClassName = 'me.dyaika.bot.Bot'
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
+}
+
+javadoc {
+    options.encoding = 'UTF-8'
+}
+
+shadowJar {
+    archivesBaseName = "${project.name}"
+    libsDirName = "${project.name}"
+    classifier('')
 }
 
 test {

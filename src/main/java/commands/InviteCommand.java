@@ -18,7 +18,7 @@ public class InviteCommand extends ListenerAdapter {
         else
         {
             System.out.println(event.getMember().getEffectiveName());
-            event.getChannel().sendMessage(event.getMember().getEffectiveName()).queue();
+            event.getChannel().sendMessage(event.getMessage().getContentDisplay()).queue();
         }
     }
 
