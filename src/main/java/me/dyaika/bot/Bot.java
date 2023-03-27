@@ -1,19 +1,30 @@
 package me.dyaika.bot;
 
-import commands.InviteCommand;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.*;
+import me.dyaika.bot.commands.InviteCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Bot {
-    public static void main(String[] args) {
 
+    /**
+     * Reference to firebase database
+     */
+    private static DatabaseReference ref;
+    public static void main(String[] args) throws IOException {
+        //Discord connection
         String token = null;
         try {
             File tokenFile = Paths.get("token.txt").toFile();
@@ -46,5 +57,26 @@ public class Bot {
 
         JDA jda = builder.build();
         jda.addEventListener(new InviteCommand());
+
+        //Firebase connection
+
+        FileInputStream serviceAccount =
+                new FileInputStream("charlesbot-acd4c-firebase-adminsdk-j1kjh-61e7ced5ee.json");
+
+        FirebaseOptions options = new FirebaseOptions.Builder()
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .setDatabaseUrl("https://charlesbot-acd4c-default-rtdb.europe-west1.firebasedatabase.app")
+                .build();
+
+        FirebaseApp.initializeApp(options);
+        ref = FirebaseDatabase.getInstance().getReference("guilds");
+    }
+
+    /**
+     * Use in another classes to acces database.
+     * @return reference to database
+     */
+    public static DatabaseReference getRef() {
+        return ref;
     }
 }
