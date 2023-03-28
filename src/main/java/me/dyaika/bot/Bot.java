@@ -23,23 +23,23 @@ import java.util.Scanner;
 public class Bot {
 
     /**
-     * Reference to firebase database
+     * Ссылка на базу данных Firebase
      */
     private static DatabaseReference ref;
 
     /**
-     * Firebase database as JSON
+     * База данных из Firebase как локальный JSON
      */
     private static JsonObject guilds_json;
 
     /**
-     * Main function, starting bot.
-     * Here application gets access tokens and picks which commands will be available
+     * Главная функция, запускает бота.
+     * Здесь приложение получает токены доступа и выбирает, какие команды будут доступны
      * @param args
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        // Discord connection
+        // Подключение Discord
         String token = null;
         try {
             File tokenFile = Paths.get("token.txt").toFile();
@@ -67,13 +67,16 @@ public class Bot {
         if (token == null) return;
         JDABuilder builder = JDABuilder.createDefault(token);
         builder.enableIntents(GatewayIntent.MESSAGE_CONTENT); // enables explicit access to message.getContentDisplay()
-        // Set activity (like "playing Something")
-        builder.setActivity(Activity.watching("Mr. Dyaika's youtube channel"));
+
+        // Задает деятельность (например "играет в ЧтоТо-2)
+        builder.setActivity(Activity.watching("Indian guy on YouTube"));
 
         JDA jda = builder.build();
+
+        // Добавлять новые классы команд сюда
         jda.addEventListener(new InviteCommand());
 
-        // Firebase connection
+        // Подключение Firebase
         FileInputStream serviceAccount =
                 new FileInputStream("charlesbot-acd4c-firebase-adminsdk-j1kjh-61e7ced5ee.json");
 
@@ -87,7 +90,7 @@ public class Bot {
         ref.child("guilds").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // JSON string to JsonObject parsing
+                // Преобразование строки в JsonObject
                 Gson gson = new Gson();
                 String json = gson.toJson(dataSnapshot.getValue());
                 guilds_json = JsonParser.parseString(json).getAsJsonObject();
@@ -95,24 +98,24 @@ public class Bot {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Errors handler
+                // Обработка ошибок
             }
         });
     }
 
     /**
-     * Use in another classes to access database reference.
-     * Root is database root
-     * @return reference to database
+     * Использовать в других классах для получения ссылки на базу данных.
+     * Корнем является корень базы данных
+     * @return Ссылка на базу данных
      */
     public static DatabaseReference getRef() {
         return ref;
     }
 
     /**
-     * Use in another classes to access database.
-     * Root is guilds key
-     * @return guilds database as json
+     * Использовать в других классах для получения базы данных.
+     * Корнем является ключ guilds (серверы)
+     * @return база данных guilds (серверы) как json
      */
     public static JsonObject getGuildsJson() {
         return guilds_json;

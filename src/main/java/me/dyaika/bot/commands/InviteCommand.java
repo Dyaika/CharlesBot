@@ -1,18 +1,17 @@
 package me.dyaika.bot.commands;
 
-import com.google.firebase.database.*;
 import com.google.gson.JsonObject;
 import me.dyaika.bot.Bot;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 public class InviteCommand extends ListenerAdapter {
 
+    /**
+     * Срабатывает при получении любого сообщения.
+     * Название Invite не отображает суть, хотел одно - сделал другое, класс будет удален позднее.
+     * @param event событие получения сообщения с важной информацией
+     */
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getMember().getUser().isBot()){
@@ -20,10 +19,10 @@ public class InviteCommand extends ListenerAdapter {
         }
         JsonObject guilds = Bot.getGuildsJson();
 
-        //id of guild where message were received
+        // id для guild (сервера) где было получено сообщение
         String guild_id = event.getGuild().getId();
 
-        //safe value reading from json
+        // безопасное чтение из json
         if (!guilds.has(guild_id)) {
             guilds.add(guild_id, new JsonObject());
         }
@@ -33,15 +32,15 @@ public class InviteCommand extends ListenerAdapter {
         }
         count++;
 
-        //value writing to json and database
+        // запись значения в json и базу данных
         guilds.getAsJsonObject(guild_id).addProperty("messages_count", count);
         Bot.getRef().child("guilds")
                 .child(guild_id)
                 .child("messages_count")
                 .setValueAsync(count);
-        String answer = event.getMember().getEffectiveName() + ", your message #" + count + " "
+        String answer = event.getMember().getEffectiveName() + ", сообщение #" + count + " "
                 + event.getMessage().getContentDisplay();
-        System.out.println(event.getGuild().getId() + ": " + count);
+        System.out.println(guild_id + ": " + count);
         event.getChannel().sendMessage(answer).queue();
     }
 
