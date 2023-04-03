@@ -1,2 +1,4 @@
-package me.dyaika.bot.commands;public class MusicCommands {
+package me.dyaika.bot.commands;
+
+public class MusicCommands {
 }
