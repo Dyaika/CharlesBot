@@ -7,18 +7,16 @@ import com.google.firebase.database.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.dyaika.bot.commands.InviteCommand;
+import me.dyaika.bot.commands.ModeratorCommands;
+import me.dyaika.bot.commands.OwnerCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Scanner;
+import java.util.List;
 
 public class Bot {
 
@@ -40,32 +38,7 @@ public class Bot {
      */
     public static void main(String[] args) throws IOException {
         // Подключение Discord
-        String token = null;
-        try {
-            File tokenFile = Paths.get("token.txt").toFile();
-            if (!tokenFile.exists()) {
-                System.out.println("[ERROR] Could not find token.txt file");
-                System.out.print("Please paste in your bot token: ");
-                Scanner s = new Scanner(System.in);
-                token = s.nextLine();
-                System.out.println();
-                System.out.println("[INFO] Creating token.txt - please wait");
-                if (!tokenFile.createNewFile()) {
-                    System.out.println(
-                            "[ERROR] Could not create token.txt - please create this file and paste in your token"
-                                    + ".");
-                    s.close();
-                    return;
-                }
-                Files.write(tokenFile.toPath(), token.getBytes());
-                s.close();
-            }
-            token = new String(Files.readAllBytes(tokenFile.toPath()));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        if (token == null) return;
-        JDABuilder builder = JDABuilder.createDefault(token);
+        JDABuilder builder = JDABuilder.createDefault(Config.get("token"));
         builder.enableIntents(GatewayIntent.MESSAGE_CONTENT); // enables explicit access to message.getContentDisplay()
 
         // Задает деятельность (например "играет в ЧтоТо-2)
@@ -74,15 +47,22 @@ public class Bot {
         JDA jda = builder.build();
 
         // Добавлять новые классы команд сюда
-        jda.addEventListener(new InviteCommand());
+        jda.addEventListener(
+                new OwnerCommand(),
+                new ModeratorCommands());
 
+        try {
+            jda.awaitReady();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         // Подключение Firebase
         FileInputStream serviceAccount =
-                new FileInputStream("charlesbot-acd4c-firebase-adminsdk-j1kjh-61e7ced5ee.json");
+                new FileInputStream(Config.get("firebase_key"));
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .setDatabaseUrl("https://charlesbot-acd4c-default-rtdb.europe-west1.firebasedatabase.app")
+                .setDatabaseUrl(Config.get("firebase_url"))
                 .build();
 
         FirebaseApp.initializeApp(options);
@@ -119,5 +99,21 @@ public class Bot {
      */
     public static JsonObject getGuildsJson() {
         return guilds_json;
+    }
+
+    /**
+     * Проверка пользователя по id на владельца
+     * @param id Идентификатор проверяемого пользователя
+     * @return является ли пользователь владельцем
+     */
+    public static boolean isOwner(String id){
+        List<String> owners_id = List.of(Config.get("owners_id").split(" "));
+        for (String owner_id:
+             owners_id) {
+            if (id.equals(owner_id)){
+                return true;
+            }
+        }
+        return false;
     }
 }
