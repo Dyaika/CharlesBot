@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModeratorCommands extends ListenerAdapter {
+
+    /**
+     * Здесь добавляются конкретные комманды с описанием и опциями
+     * @param event Событие
+     */
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         List<SlashCommandData> SlashCommandData = new ArrayList<>();
@@ -22,6 +27,10 @@ public class ModeratorCommands extends ListenerAdapter {
         event.getJDA().updateCommands().addCommands(SlashCommandData).queue();
     }
 
+    /**
+     * Здесь прописывается логика самих комманд
+     * @param event Событие - где произошло, кто вызвал и т.д.
+     */
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         switch (event.getName()){
