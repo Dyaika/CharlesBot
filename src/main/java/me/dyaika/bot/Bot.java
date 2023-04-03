@@ -10,6 +10,7 @@ import com.google.gson.JsonParser;
 import me.dyaika.bot.commands.ModeratorCommands;
 import me.dyaika.bot.commands.OwnerCommand;
 import me.dyaika.bot.commands.RandomCommands;
+import me.dyaika.bot.commands.WatchlistCommands;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -55,7 +56,8 @@ public class Bot {
         jda.addEventListener(
                 new OwnerCommand(),
                 new ModeratorCommands(),
-                new RandomCommands());
+                new RandomCommands(),
+                new WatchlistCommands());
 
         try {
             jda.awaitReady();
