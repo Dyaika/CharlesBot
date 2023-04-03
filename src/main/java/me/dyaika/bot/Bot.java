@@ -9,13 +9,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.dyaika.bot.commands.ModeratorCommands;
 import me.dyaika.bot.commands.OwnerCommand;
+import me.dyaika.bot.commands.RandomCommands;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Bot {
@@ -29,6 +32,8 @@ public class Bot {
      * База данных из Firebase как локальный JSON
      */
     private static JsonObject guilds_json;
+
+    private static List<SlashCommandData> slashCommands = new ArrayList<>();
 
     /**
      * Главная функция, запускает бота.
@@ -49,13 +54,18 @@ public class Bot {
         // Добавлять новые классы команд сюда
         jda.addEventListener(
                 new OwnerCommand(),
-                new ModeratorCommands());
+                new ModeratorCommands(),
+                new RandomCommands());
 
         try {
             jda.awaitReady();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        // Добавляем все команды, описанные в классах выше
+        jda.updateCommands().addCommands(slashCommands).queue();
+
         // Подключение Firebase
         FileInputStream serviceAccount =
                 new FileInputStream(Config.get("firebase_key"));
@@ -115,5 +125,21 @@ public class Bot {
             }
         }
         return false;
+    }
+
+    /**
+     * Slash-команды списком добавляются в onReady() через этот метод
+     * @param commands Список данных о командах
+     */
+    public static void addSlashCommands(List<SlashCommandData> commands){
+        slashCommands.addAll(commands);
+    }
+
+    /**
+     * Slash-команда (одна) добавляется в onReady() через этот метод
+     * @param command Данные о команде
+     */
+    public static void addSlashCommand(SlashCommandData command){
+        slashCommands.add(command);
     }
 }

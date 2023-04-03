@@ -1,5 +1,6 @@
 package me.dyaika.bot.commands;
 
+import me.dyaika.bot.Bot;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class ModeratorCommands extends ListenerAdapter {
 
@@ -21,10 +23,8 @@ public class ModeratorCommands extends ListenerAdapter {
      */
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        List<SlashCommandData> SlashCommandData = new ArrayList<>();
-        SlashCommandData.add(Commands.slash("ping", "Ping someone")
+        Bot.addSlashCommand(Commands.slash("ping", "Ping someone")
                 .addOption(OptionType.USER, "user", "User you want to ping", false));
-        event.getJDA().updateCommands().addCommands(SlashCommandData).queue();
     }
 
     /**
