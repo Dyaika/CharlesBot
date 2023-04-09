@@ -13,15 +13,17 @@ repositories {
 }
 
 dockerPrepare {
-
+    dependsOn(shadowJar)
 }
+
 docker {
-    name "mycoolapp3"
+    dependsOn(shadowJar)
+    name "charles"
     dockerfile file('Dockerfile')
-    copySpec.from(shadowJar)
-    copySpec.from('config.json')
-    copySpec.from('charlesbot-acd4c-firebase-adminsdk-j1kjh-61e7ced5ee.json')
-    buildArgs(['JAR_FILE': "CharlesBot-1.0-SNAPSHOT.jar"])
+    files 'config.json',
+            'charlesbot-acd4c-firebase-adminsdk-j1kjh-61e7ced5ee.json',
+            "build/${project.name}/${project.name}-${version}.jar"
+    buildArgs(['JAR_FILE': "${project.name}-${version}.jar"])
 }
 
 dependencies {
