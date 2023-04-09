@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version "7.0.0"
+    id 'com.palantir.docker' version '0.35.0'
 }
 
 group 'me.dyaika'
@@ -9,6 +10,18 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+}
+
+dockerPrepare {
+
+}
+docker {
+    name "mycoolapp3"
+    dockerfile file('Dockerfile')
+    copySpec.from(shadowJar)
+    copySpec.from('config.json')
+    copySpec.from('charlesbot-acd4c-firebase-adminsdk-j1kjh-61e7ced5ee.json')
+    buildArgs(['JAR_FILE': "CharlesBot-1.0-SNAPSHOT.jar"])
 }
 
 dependencies {
@@ -45,6 +58,7 @@ shadowJar {
     libsDirName = "${project.name}"
     classifier('')
 }
+
 
 test {
     useJUnitPlatform()
