@@ -10,6 +10,7 @@ import com.google.gson.JsonParser;
 import me.dyaika.bot.commands.ModeratorCommands;
 import me.dyaika.bot.commands.OwnerCommand;
 import me.dyaika.bot.commands.RandomCommands;
+import me.dyaika.bot.commands.WatchlistCommands;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -33,13 +34,16 @@ public class Bot {
      */
     private static JsonObject guilds_json;
 
+    /**
+     * Основные команды бота
+     */
     private static List<SlashCommandData> slashCommands = new ArrayList<>();
 
     /**
      * Главная функция, запускает бота.
      * Здесь приложение получает токены доступа и выбирает, какие команды будут доступны
-     * @param args
-     * @throws IOException
+     * @param args Не используются
+     * @throws IOException Ошибки при чтении файлов и тд
      */
     public static void main(String[] args) throws IOException {
         // Подключение Discord
@@ -55,7 +59,8 @@ public class Bot {
         jda.addEventListener(
                 new OwnerCommand(),
                 new ModeratorCommands(),
-                new RandomCommands());
+                new RandomCommands(),
+                new WatchlistCommands());
 
         try {
             jda.awaitReady();

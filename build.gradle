@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'com.github.johnrengelman.shadow' version "7.0.0"
+    id 'com.palantir.docker' version '0.35.0'
 }
 
 group 'me.dyaika'
@@ -9,6 +10,20 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+}
+
+dockerPrepare {
+    dependsOn(shadowJar)
+}
+
+docker {
+    dependsOn(shadowJar)
+    name "charles"
+    dockerfile file('Dockerfile')
+    files 'config.json',
+            'charlesbot-acd4c-firebase-adminsdk-j1kjh-61e7ced5ee.json',
+            "build/${project.name}/${project.name}-${version}.jar"
+    buildArgs(['JAR_FILE': "${project.name}-${version}.jar"])
 }
 
 dependencies {
@@ -45,6 +60,7 @@ shadowJar {
     libsDirName = "${project.name}"
     classifier('')
 }
+
 
 test {
     useJUnitPlatform()
