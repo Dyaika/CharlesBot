@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class MusicCommands extends ListenerAdapter
 {
@@ -75,13 +76,11 @@ public class MusicCommands extends ListenerAdapter
                 }
 
                 String name = event.getOption("url").getAsString();
-
-                try {
-                    new URI(name);
-                } catch (URISyntaxException e) {
+                Pattern pattern = Pattern.compile("^((ftp|http|https):\\/\\/)?(www\\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9\\-]*\\.?)*\\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\\/([\\w#!:.?+=&%@!\\-\\/])*)?");
+                if (!pattern.matcher(name).matches())
+                {
                     name = "ytsearch:" + name;
                 }
-
                 PlayerManager playerManager = PlayerManager.get();
                 event.reply("Играет " + name).queue();
                 playerManager.play(event.getGuild(), name);
@@ -149,6 +148,7 @@ public class MusicCommands extends ListenerAdapter
                 trackScheduler.getQueue().clear();
                 trackScheduler.getPlayer().stopTrack();
                 event.reply("Воспроизведение остоновлено").queue();
+                break;
             }
             case "now":
             {
@@ -188,6 +188,7 @@ public class MusicCommands extends ListenerAdapter
                 builder.setDescription("**Название: **" + info.title);
                 builder.appendDescription("\n**Автор: **" + info.author);
                 event.replyEmbeds(builder.build()).queue();
+                break;
             }
             case "queue":
             {
@@ -230,6 +231,7 @@ public class MusicCommands extends ListenerAdapter
                     builder.addField(i + 1 + ":", info.title, false);
                 }
                 event.replyEmbeds(builder.build()).queue();
+                break;
             }
             case "repeat":
             {
@@ -274,6 +276,7 @@ public class MusicCommands extends ListenerAdapter
                     event.reply("Трек " + playingTrack.getInfo().title + " теперь повторяется").queue();
                 }
                 guildMusicManager.getTrackScheduler().setRepeat(!repeat);
+                break;
             }
             case "volume":
             {
@@ -309,6 +312,7 @@ public class MusicCommands extends ListenerAdapter
                 }
                 guildMusicManager.getTrackScheduler().getPlayer().setVolume(event.getOption("vol").getAsInt());
                 event.reply("Текущая громкость: " + guildMusicManager.getTrackScheduler().getPlayer().getVolume()).queue();
+                break;
             }
             default:
                 break;
