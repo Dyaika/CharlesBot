@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.dyaika.bot.commands.ModeratorCommands;
+import me.dyaika.bot.commands.MusicCommands;
 import me.dyaika.bot.commands.OwnerCommand;
 import me.dyaika.bot.commands.RandomCommands;
 import me.dyaika.bot.commands.WatchlistCommands;
@@ -60,7 +61,8 @@ public class Bot {
                 new OwnerCommand(),
                 new ModeratorCommands(),
                 new RandomCommands(),
-                new WatchlistCommands());
+                new WatchlistCommands(),
+                new MusicCommands());
 
         try {
             jda.awaitReady();
