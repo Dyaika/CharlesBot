@@ -82,8 +82,17 @@ public class MusicCommands extends ListenerAdapter
                     name = "ytsearch:" + name;
                 }
                 PlayerManager playerManager = PlayerManager.get();
-                event.reply("Играет " + name).queue();
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Трек добавлен в очередь");
                 playerManager.play(event.getGuild(), name);
+                GuildMusicManager guildMusicManager = PlayerManager.get().getGuildMusicManager(event.getGuild());
+                while (guildMusicManager.getTrackScheduler().getPlayer().getPlayingTrack() == null) {}
+                AudioTrackInfo info = guildMusicManager.getTrackScheduler().getPlayer().getPlayingTrack().getInfo();
+                builder.setDescription("**Название: **" + info.title);
+                builder.appendDescription("\n**Автор: **" + info.author);
+                builder.appendDescription("\n**Ссылка: **" + info.uri);
+                builder.setColor(439400);
+                event.replyEmbeds(builder.build()).queue();
                 break;
             }
             case "skip":
@@ -113,8 +122,15 @@ public class MusicCommands extends ListenerAdapter
                 }
 
                 GuildMusicManager guildMusicManager = PlayerManager.get().getGuildMusicManager(event.getGuild());
+                AudioTrackInfo info = guildMusicManager.getTrackScheduler().getPlayer().getPlayingTrack().getInfo();
                 guildMusicManager.getTrackScheduler().getPlayer().stopTrack();
-                event.reply("Трек пропущен").queue();
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Трек пропущен");
+                builder.setDescription("**Название: **" + info.title);
+                builder.appendDescription("\n**Автор: **" + info.author);
+                builder.appendDescription("\n**Ссылка: **" + info.uri);
+                builder.setColor(439400);
+                event.replyEmbeds(builder.build()).queue();
                 break;
             }
             case "stop":
@@ -187,6 +203,8 @@ public class MusicCommands extends ListenerAdapter
                 builder.setTitle("Сейчас играет:");
                 builder.setDescription("**Название: **" + info.title);
                 builder.appendDescription("\n**Автор: **" + info.author);
+                builder.appendDescription("\n**Ссылка: **" + info.uri);
+                builder.setColor(439400);
                 event.replyEmbeds(builder.build()).queue();
                 break;
             }

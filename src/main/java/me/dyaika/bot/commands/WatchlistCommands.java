@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.dyaika.bot.Bot;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -46,7 +47,7 @@ public class WatchlistCommands extends ListenerAdapter {
         Gson gson = new Gson();
         switch (event.getName()){
             case "watchlist":
-                event.deferReply().queue();
+                //event.deferReply().queue();
                 StringBuilder answer;
                 JsonObject guilds = Bot.getGuildsJson();
                 String guild_id = event.getGuild().getId();
@@ -152,30 +153,43 @@ public class WatchlistCommands extends ListenerAdapter {
 
                                 // Если хотят просто увидеть список
                                 answer = new StringBuilder("Список этого сервера:\n");
+                                EmbedBuilder builder = new EmbedBuilder();
+                                builder.setTitle("** Список этого сервера: **");
+                                builder.setColor(439400);
+                                int i = 1;
                                 for (WatchlistItem item:
                                      items) {
-                                    answer.append(item.getTitle()).append("\n");
+                                    builder.addField(i++ + ":", item.getTitle(), false);
+                                    //answer.append(item.getTitle()).append("\n");
                                 }
-                                event.getHook().sendMessage(answer.toString()).queue();
+                                event.replyEmbeds(builder.build()).queue();
+                                //event.getHook().sendMessage(answer.toString()).queue();
                             } else {
 
                                 // Если хотят увидеть информацию по конкретному названию
                                 title = event.getOption("title").getAsString();
+                                EmbedBuilder builder = new EmbedBuilder();
+                                builder.setTitle("** Информация о: " + title + "**");
                                 answer = new StringBuilder("Информация о ").append(title).append(":\n");
+                                builder.setColor(439400);
                                 isFound = false;
                                 for (WatchlistItem item:
                                      items) {
                                     if (item.getTitle().equalsIgnoreCase(title)){
-                                        answer.append(item.episodeRow()).append("\n");
-                                        answer.append(item.sourceRow());
+                                        builder.setDescription(item.episodeRow() + "\n");
+                                        builder.appendDescription(item.sourceRow());
+//                                        answer.append(item.episodeRow()).append("\n");
+//                                        answer.append(item.sourceRow());
                                         isFound = true;
                                         break;
                                     }
                                 }
                                 if (!isFound){
-                                    answer.append("не найдено");
+                                    builder.setDescription("Не найдено");
+                                    //answer.append("не найдено");
                                 }
-                                event.getHook().sendMessage(answer.toString()).queue();
+                                event.replyEmbeds(builder.build()).queue();
+                               // event.getHook().sendMessage(answer.toString()).queue();
                             }
                         }
                         break;
@@ -293,7 +307,7 @@ public class WatchlistCommands extends ListenerAdapter {
          * @return Возвращает красиво оформленную информацию об эпизоде
          */
         public String episodeRow(){
-            StringBuilder res = new StringBuilder("эпизод: ");
+            StringBuilder res = new StringBuilder("Эпизод: ");
             if (episode == EMPTY_EPISODE){
                 res.append("не указан");
             } else {
@@ -307,7 +321,7 @@ public class WatchlistCommands extends ListenerAdapter {
          * @return Возвращает красиво оформленную информацию об источнике
          */
         public String sourceRow(){
-            StringBuilder res = new StringBuilder("где посмотреть: ");
+            StringBuilder res = new StringBuilder("Где посмотреть: ");
             if (Objects.equals(source, EMPTY_SOURCE)){
                 res.append("не указано");
             } else {
